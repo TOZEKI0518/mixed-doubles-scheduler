@@ -2,3 +2,12 @@
 cd C:\Users\81805\mixed-doubles-scheduler
 npm run dev -- -p 3001
 http://localhost:3001
+
+
+Github
+git remote add origin https://github.com/TOZEKI0518/mixed-doubles-scheduler.git
+git branch -M main
+git push -u origin main
+
+Key store Password
+TennisRansu2026!

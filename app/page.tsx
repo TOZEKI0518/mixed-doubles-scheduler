@@ -1,3 +1,5 @@
+// app/page.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -78,12 +80,7 @@ export default function Home() {
 
       for (const candidate of candidates) {
         if (selected.length >= courtCount) break;
-
-        const hasUsedPlayer = candidate.players.some((p) =>
-          usedThisRound.has(p)
-        );
-
-        if (hasUsedPlayer) continue;
+        if (candidate.players.some((p) => usedThisRound.has(p))) continue;
 
         selected.push(candidate);
         candidate.players.forEach((p) => usedThisRound.add(p));
@@ -141,32 +138,22 @@ export default function Home() {
       <div className="mx-auto max-w-md">
         <header className="mb-5 text-center">
           <div className="mb-2 text-4xl">🎾</div>
-          <h1 className="text-2xl font-black text-gray-900">
+          <h1 className="text-3xl font-black text-slate-900">
             ミックス乱数表
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-2 text-base font-semibold text-slate-600">
             男女ペアの試合表をかんたん作成
           </p>
         </header>
 
         <section className="mb-5 rounded-3xl bg-white p-5 shadow-lg">
-          <h2 className="mb-4 text-lg font-bold">条件入力</h2>
+          <h2 className="mb-4 text-xl font-black text-slate-900">条件入力</h2>
 
           <div className="grid grid-cols-2 gap-3">
-            <InputBox label="男性" value={menCount} setValue={setMenCount} />
-            <InputBox label="女性" value={womenCount} setValue={setWomenCount} />
-            <InputBox
-              label="コート"
-              value={courtCount}
-              setValue={setCourtCount}
-              min={1}
-            />
-            <InputBox
-              label="試合数"
-              value={matchCount}
-              setValue={setMatchCount}
-              min={1}
-            />
+            <InputBox label="男性" value={menCount} setValue={setMenCount} min={1} />
+            <InputBox label="女性" value={womenCount} setValue={setWomenCount} min={1} />
+            <InputBox label="コート" value={courtCount} setValue={setCourtCount} min={1} />
+            <InputBox label="試合数" value={matchCount} setValue={setMatchCount} min={1} />
           </div>
 
           <MemberInputs
@@ -193,27 +180,27 @@ export default function Home() {
 
         <section className="space-y-4">
           {matches.length === 0 && (
-            <div className="rounded-3xl bg-white p-6 text-center text-gray-500 shadow">
+            <div className="rounded-3xl bg-white p-6 text-center font-bold text-slate-600 shadow">
               条件を入力して作成ボタンを押してください
             </div>
           )}
 
           {matches.map((round, roundIndex) => (
             <div key={roundIndex} className="rounded-3xl bg-white p-5 shadow-lg">
-              <h2 className="mb-4 text-xl font-black text-gray-900">
+              <h2 className="mb-4 text-xl font-black text-slate-900">
                 第{roundIndex + 1}試合
               </h2>
 
               <div className="space-y-3">
                 {round.map((match) => (
-                  <div key={match.court} className="rounded-2xl border p-4">
-                    <div className="mb-3 inline-block rounded-full bg-gray-100 px-3 py-1 text-sm font-bold">
+                  <div key={match.court} className="rounded-2xl border border-slate-200 p-4">
+                    <div className="mb-3 inline-block rounded-full bg-slate-100 px-3 py-1 text-sm font-bold text-slate-700">
                       コート {match.court}
                     </div>
 
                     <div className="space-y-3">
                       <TeamCard color="blue" players={match.team1} />
-                      <div className="text-center text-sm font-black text-gray-400">
+                      <div className="text-center text-sm font-black text-slate-500">
                         VS
                       </div>
                       <TeamCard color="pink" players={match.team2} />
@@ -221,20 +208,22 @@ export default function Home() {
                   </div>
                 ))}
 
-                <div className="rounded-2xl bg-gray-50 p-4">
-                  <div className="mb-2 font-bold">休憩</div>
+                <div className="rounded-2xl bg-slate-50 p-4">
+                  <div className="mb-2 font-black text-slate-800">休憩</div>
                   <div className="flex flex-wrap gap-2">
                     {round[0]?.rest.length > 0 ? (
                       round[0].rest.map((player) => (
                         <span
                           key={player}
-                          className="rounded-full bg-white px-3 py-1 text-sm shadow-sm"
+                          className="rounded-full bg-white px-3 py-1 text-sm font-bold text-slate-700 shadow-sm"
                         >
                           {player}
                         </span>
                       ))
                     ) : (
-                      <span className="text-sm text-gray-400">休憩者なし</span>
+                      <span className="text-sm font-bold text-slate-500">
+                        休憩者なし
+                      </span>
                     )}
                   </div>
                 </div>
@@ -251,24 +240,47 @@ function InputBox({
   label,
   value,
   setValue,
-  min = 0,
+  min = 1,
 }: {
   label: string;
   value: number;
   setValue: (value: number) => void;
   min?: number;
 }) {
+  const decrease = () => {
+    setValue(Math.max(min, value - 1));
+  };
+
+  const increase = () => {
+    setValue(value + 1);
+  };
+
   return (
-    <label className="rounded-2xl bg-gray-50 p-3">
-      <div className="mb-1 text-sm font-bold text-gray-500">{label}</div>
-      <input
-        type="number"
-        min={min}
-        value={value}
-        onChange={(e) => setValue(Number(e.target.value))}
-        className="w-full bg-transparent text-2xl font-black outline-none"
-      />
-    </label>
+    <div className="rounded-2xl bg-slate-50 p-3 shadow-sm">
+      <div className="mb-3 text-sm font-black text-slate-700">{label}</div>
+
+      <div className="flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={decrease}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-2xl font-black text-slate-700 shadow active:scale-95"
+        >
+          −
+        </button>
+
+        <div className="min-w-8 text-center text-3xl font-black text-slate-900">
+          {value}
+        </div>
+
+        <button
+          type="button"
+          onClick={increase}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-2xl font-black text-white shadow active:scale-95"
+        >
+          ＋
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -286,13 +298,13 @@ function MemberInputs({
   const titleColor = color === "blue" ? "text-blue-700" : "text-pink-700";
   const inputColor =
     color === "blue"
-      ? "border-blue-100 bg-blue-50 focus:border-blue-400"
-      : "border-pink-100 bg-pink-50 focus:border-pink-400";
+      ? "border-blue-200 bg-blue-50 focus:border-blue-500 focus:ring-blue-200"
+      : "border-pink-200 bg-pink-50 focus:border-pink-500 focus:ring-pink-200";
 
   return (
-    <div className="mt-5">
-      <h3 className={`mb-2 font-bold ${titleColor}`}>{title}</h3>
-      <div className="grid gap-2">
+    <div className="mt-6">
+      <h3 className={`mb-3 text-lg font-black ${titleColor}`}>{title}</h3>
+      <div className="grid gap-3">
         {names.map((name, index) => (
           <input
             key={index}
@@ -302,7 +314,7 @@ function MemberInputs({
               updated[index] = e.target.value;
               setNames(updated);
             }}
-            className={`rounded-2xl border px-4 py-3 text-base outline-none ${inputColor}`}
+            className={`rounded-2xl border px-4 py-3 text-base font-bold text-slate-900 outline-none focus:ring-2 ${inputColor}`}
           />
         ))}
       </div>
@@ -319,12 +331,12 @@ function TeamCard({
 }) {
   const colorClass =
     color === "blue"
-      ? "bg-blue-50 border-blue-100 text-blue-900"
-      : "bg-pink-50 border-pink-100 text-pink-900";
+      ? "bg-blue-50 border-blue-200 text-blue-900"
+      : "bg-pink-50 border-pink-200 text-pink-900";
 
   return (
     <div
-      className={`rounded-2xl border px-4 py-3 text-center font-bold ${colorClass}`}
+      className={`rounded-2xl border px-4 py-3 text-center font-black ${colorClass}`}
     >
       {players[0]}　&　{players[1]}
     </div>
