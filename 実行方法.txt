@@ -1,0 +1,4 @@
+ローカルで見る方法
+cd C:\Users\81805\mixed-doubles-scheduler
+npm run dev -- -p 3001
+http://localhost:3001
